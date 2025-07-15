@@ -37,8 +37,8 @@ It's not just a chatbot — it's a complete AI Career Support System.
 ---
 
 ## 🛠️ Folder Structure
-📁 Folder Structure
 
+```bash
 careerpilot-ai/
 ├── backend/
 │   ├── main.py
@@ -51,7 +51,9 @@ careerpilot-ai/
 │   └── styles/
 ├── README.md
 └── requirements.txt
-🧪 Running Locally
+
+---
+
 
 ▶️ Backend (FastAPI)
 cd backend
@@ -82,7 +84,10 @@ Backend API: https://careerpilot-api.railway.app
 - Chat memory using LangChain
 - LinkedIn profile analyzer
 - Skill gap visualizer
-👨‍💻 Author
+
+---
+
+## 👨‍💻 Author
 
 Krishna Kunal Dadhich  
 GitHub: https://github.com/krishnakunaldadhich  
