@@ -54,15 +54,21 @@ careerpilot-ai/
 
 ---
 
+## 🧪 Running Locally
 
-▶️ Backend (FastAPI)
+### ▶️ Backend (FastAPI)
+
+```bash
 cd backend
 python -m venv venv
 source venv/bin/activate    # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn main:app --reload
 
-▶️ Frontend (Next.js)
+
+
+### ▶️ Frontend (Next.js)
+```bash
 cd frontend
 npm install
 npm run dev
