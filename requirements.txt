@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-multipart
+PyMuPDF
+spacy
+sentence-transformers
+openai
+pydantic
+scikit-learn
+PyPDF2
+python-dotenv
