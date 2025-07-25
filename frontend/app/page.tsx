@@ -26,11 +26,11 @@ export default function Page() {
     formData.append("file", file);
 
     try {
-      const res = await axios.post("http://127.0.0.1:8000/analyze-resume/", formData);
+      const res = await axios.post("https://careerpilot-ai-production.up.railway.app/analyze-resume/", formData);
       setResult(res.data);
 
       const skills = res.data.skills || [];
-      const jobRes = await axios.post("http://127.0.0.1:8000/match-jobs/", skills, {
+      const jobRes = await axios.post("https://careerpilot-ai-production.up.railway.app/match-jobs/", skills, {
         headers: { "Content-Type": "application/json" },
       });
       setJobs(jobRes.data.recommended_jobs);
@@ -39,6 +39,30 @@ export default function Page() {
       console.error(err);
     }
     setLoading(false);
+  };
+
+  const handleSmartInsights = async () => {
+    if (!result?.skills || !result?.experience || !result?.projects) {
+      alert("Please analyze a resume first.");
+      return;
+    }
+
+    setGenerating(true);
+    try {
+      const res = await axios.post("https://careerpilot-ai-production.up.railway.app/smart-insights/", {
+        skills: result.skills,
+        experience: result.experience,
+        projects: result.projects,
+      }, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      setInsights(res.data.insights || "No insights generated.");
+    } catch (err) {
+      console.error(err);
+      setInsights("❌ Error generating insights.");
+    }
+    setGenerating(false);
   };
 
   if (loading) {
@@ -125,6 +149,22 @@ export default function Page() {
             </div>
           </div>
         )}
+        {result && (
+          <button
+            onClick={handleSmartInsights}
+            disabled={generating}
+            className="bg-green-600 text-white px-4 py-2 rounded w-full mt-4 hover:bg-green-700 transition"
+          >
+            {generating ? "Generating Insights..." : "💡 Generate Smart Career Insights"}
+          </button>
+        )}
+                {insights && (
+          <div className="mt-6 bg-yellow-50 border border-yellow-300 rounded p-4 text-sm whitespace-pre-wrap">
+            <h3 className="font-semibold text-lg mb-2">🧠 AI-Powered Career Suggestions</h3>
+            <p>{insights}</p>
+          </div>
+        )}
+        
       </div>
     </main>
   );
