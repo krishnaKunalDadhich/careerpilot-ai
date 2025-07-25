@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import axios from "axios";
 import ResultCard from "../components/ResultCard";
@@ -14,7 +15,7 @@ type ResumeResult = {
   text_preview?: string;
 };
 
-export default function Page() {
+export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<ResumeResult | null>(null);
   const [jobs, setJobs] = useState<string[]>([]);
@@ -23,15 +24,17 @@ export default function Page() {
   const [generating, setGenerating] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0] || null;
-    setFile(selectedFile);
+    const selected = e.target.files?.[0] || null;
+    setFile(selected);
     setResult(null);
     setJobs([]);
+    setInsights(null);
   };
 
   const handleAnalyze = async () => {
     if (!file) return;
     setLoading(true);
+
     const formData = new FormData();
     formData.append("file", file);
 
@@ -40,7 +43,7 @@ export default function Page() {
         "https://careerpilot-ai-production.up.railway.app/analyze-resume/",
         formData
       );
-      setResult(res.data);
+      setResult(res.data as ResumeResult);
 
       const skills = res.data.skills || [];
       const jobRes = await axios.post(
@@ -51,11 +54,12 @@ export default function Page() {
         }
       );
       setJobs(jobRes.data.recommended_jobs);
-    } catch (err) {
-      alert("Something went wrong.");
-      console.error(err);
+    } catch (error) {
+      console.error("Resume analysis error:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSmartInsights = async () => {
@@ -77,29 +81,26 @@ export default function Page() {
           headers: { "Content-Type": "application/json" },
         }
       );
-
       setInsights(res.data.insights || "No insights generated.");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Smart insights error:", error);
       setInsights("❌ Error generating insights.");
+    } finally {
+      setGenerating(false);
     }
-    setGenerating(false);
   };
-
-  if (loading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <p className="text-lg font-medium">🔄 Analyzing your resume...</p>
-      </main>
-    );
-  }
 
   return (
     <main className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-2xl mx-auto bg-white rounded shadow p-6 space-y-4">
         <h1 className="text-2xl font-bold text-center">📄 CareerPilot.AI</h1>
 
-        <input type="file" accept="application/pdf" onChange={handleFileChange} />
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={handleFileChange}
+          className="w-full border border-gray-300 rounded p-2"
+        />
 
         <button
           onClick={handleAnalyze}
@@ -109,6 +110,10 @@ export default function Page() {
           {loading ? "Analyzing..." : "Analyze Resume"}
         </button>
 
+        {loading && (
+          <div className="text-center text-gray-700">🔄 Processing...</div>
+        )}
+
         {result && (
           <div className="space-y-3 text-sm text-gray-700">
             <p><b>👤 Name:</b> {result.name}</p>
@@ -116,7 +121,7 @@ export default function Page() {
             <p><b>📞 Phone:</b> {result.phone}</p>
             <p><b>🛠 Skills:</b> {result.skills?.join(", ")}</p>
 
-            {result.education && (
+            {Array.isArray(result.education) && result.education.length > 0 && (
               <div>
                 <b>📚 Education:</b>
                 <ul className="list-disc ml-5">
@@ -127,7 +132,7 @@ export default function Page() {
               </div>
             )}
 
-            {result.experience && (
+            {Array.isArray(result.experience) && result.experience.length > 0 && (
               <div>
                 <b>💼 Experience:</b>
                 <ul className="list-disc ml-5">
@@ -138,7 +143,7 @@ export default function Page() {
               </div>
             )}
 
-            {result.projects && (
+            {Array.isArray(result.projects) && result.projects.length > 0 && (
               <div>
                 <b>🧪 Projects:</b>
                 <ul className="list-disc ml-5">

@@ -1,12 +1,13 @@
-// components/ResultCard.tsx
-type Props = {
+"use client";
+
+type ResultCardProps = {
   title: string;
 };
 
-export default function ResultCard({ title }: Props) {
+export default function ResultCard({ title }: ResultCardProps) {
   return (
-    <div className="p-3 bg-blue-100 rounded shadow-sm">
-      <p>{title}</p>
+    <div className="border border-gray-300 rounded px-4 py-2 shadow-sm bg-white text-gray-800">
+      {title}
     </div>
   );
 }
