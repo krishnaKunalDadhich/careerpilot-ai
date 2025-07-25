@@ -3,14 +3,24 @@ import { useState } from "react";
 import axios from "axios";
 import ResultCard from "../components/ResultCard";
 
+type ResumeResult = {
+  name?: string;
+  email?: string;
+  phone?: string;
+  skills?: string[];
+  education?: string[];
+  experience?: string[];
+  projects?: string[];
+  text_preview?: string;
+};
+
 export default function Page() {
   const [file, setFile] = useState<File | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ResumeResult | null>(null);
   const [jobs, setJobs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [insights, setInsights] = useState<string | null>(null);
   const [generating, setGenerating] = useState(false);
-
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -26,13 +36,20 @@ export default function Page() {
     formData.append("file", file);
 
     try {
-      const res = await axios.post("https://careerpilot-ai-production.up.railway.app/analyze-resume/", formData);
+      const res = await axios.post(
+        "https://careerpilot-ai-production.up.railway.app/analyze-resume/",
+        formData
+      );
       setResult(res.data);
 
       const skills = res.data.skills || [];
-      const jobRes = await axios.post("https://careerpilot-ai-production.up.railway.app/match-jobs/", skills, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const jobRes = await axios.post(
+        "https://careerpilot-ai-production.up.railway.app/match-jobs/",
+        skills,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       setJobs(jobRes.data.recommended_jobs);
     } catch (err) {
       alert("Something went wrong.");
@@ -49,13 +66,17 @@ export default function Page() {
 
     setGenerating(true);
     try {
-      const res = await axios.post("https://careerpilot-ai-production.up.railway.app/smart-insights/", {
-        skills: result.skills,
-        experience: result.experience,
-        projects: result.projects,
-      }, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await axios.post(
+        "https://careerpilot-ai-production.up.railway.app/smart-insights/",
+        {
+          skills: result.skills,
+          experience: result.experience,
+          projects: result.projects,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       setInsights(res.data.insights || "No insights generated.");
     } catch (err) {
@@ -99,7 +120,7 @@ export default function Page() {
               <div>
                 <b>📚 Education:</b>
                 <ul className="list-disc ml-5">
-                  {result.education.map((edu: string, i: number) => (
+                  {result.education.map((edu, i) => (
                     <li key={i}>{edu}</li>
                   ))}
                 </ul>
@@ -110,7 +131,7 @@ export default function Page() {
               <div>
                 <b>💼 Experience:</b>
                 <ul className="list-disc ml-5">
-                  {result.experience.map((exp: string, i: number) => (
+                  {result.experience.map((exp, i) => (
                     <li key={i}>{exp}</li>
                   ))}
                 </ul>
@@ -121,7 +142,7 @@ export default function Page() {
               <div>
                 <b>🧪 Projects:</b>
                 <ul className="list-disc ml-5">
-                  {result.projects.map((proj: string, i: number) => (
+                  {result.projects.map((proj, i) => (
                     <li key={i}>{proj}</li>
                   ))}
                 </ul>
@@ -149,6 +170,7 @@ export default function Page() {
             </div>
           </div>
         )}
+
         {result && (
           <button
             onClick={handleSmartInsights}
@@ -158,13 +180,13 @@ export default function Page() {
             {generating ? "Generating Insights..." : "💡 Generate Smart Career Insights"}
           </button>
         )}
-                {insights && (
+
+        {insights && (
           <div className="mt-6 bg-yellow-50 border border-yellow-300 rounded p-4 text-sm whitespace-pre-wrap">
             <h3 className="font-semibold text-lg mb-2">🧠 AI-Powered Career Suggestions</h3>
             <p>{insights}</p>
           </div>
         )}
-        
       </div>
     </main>
   );
