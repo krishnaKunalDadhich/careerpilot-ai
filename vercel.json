@@ -3,3 +3,11 @@
     { "source": "/", "destination": "/app" }
   ]
 }
+// vercel.json
+{
+  "projects": {
+    "frontend": {
+      "rootDirectory": "frontend"
+    }
+  }
+}
