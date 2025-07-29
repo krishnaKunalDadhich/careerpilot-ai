@@ -1,13 +1,6 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/app" }
-  ]
-}
-// vercel.json
-{
-  "projects": {
-    "frontend": {
-      "rootDirectory": "frontend"
-    }
-  }
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "rootDirectory": "frontend"
 }
